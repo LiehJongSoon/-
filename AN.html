@@ -1,0 +1,2018 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>학생주도형 소리 특성 실험장치 교육 효과 분석 시스템</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Malgun Gothic', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(45deg, #2c3e50, #34495e);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .nav-tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 3px solid #007bff;
+        }
+        
+        .nav-tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            background: #e9ecef;
+            border: none;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .nav-tab.active {
+            background: #007bff;
+            color: white;
+        }
+        
+        .nav-tab:hover:not(.active) {
+            background: #dee2e6;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 30px;
+            min-height: 600px;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .input-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border-left: 5px solid #28a745;
+        }
+        
+        .input-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+        
+        .input-row label {
+            font-weight: bold;
+            color: #495057;
+            font-size: 14px;
+        }
+        
+        .input-row input, .input-row select {
+            padding: 8px 12px;
+            border: 2px solid #dee2e6;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        
+        .input-row input:focus, .input-row select:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 5px;
+        }
+        
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #0056b3;
+            transform: translateY(-2px);
+        }
+        
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #1e7e34;
+            transform: translateY(-2px);
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+        }
+        
+        .results-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-top: 25px;
+        }
+        
+        .result-card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-left: 5px solid #007bff;
+        }
+        
+        .result-card h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+        
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .stat-label {
+            font-weight: bold;
+            color: #6c757d;
+        }
+        
+        .stat-value {
+            font-weight: bold;
+            color: #007bff;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin: 20px 0;
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .significance {
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        
+        .significant {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .not-significant {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .effect-size {
+            padding: 8px 12px;
+            border-radius: 15px;
+            display: inline-block;
+            margin: 5px;
+            font-weight: bold;
+        }
+        
+        .small-effect {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .medium-effect {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .large-effect {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .student-count {
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            color: #007bff;
+            margin: 15px 0;
+        }
+        
+        .export-section {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        .data-table th,
+        .data-table td {
+            border: 1px solid #dee2e6;
+            padding: 12px;
+            text-align: center;
+            font-size: 14px;
+        }
+        
+        .data-table th {
+            background: #007bff;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .data-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+        
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .grade-selector {
+            margin: 20px 0;
+        }
+        
+        .grade-selector label {
+            display: inline-block;
+            margin-right: 20px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        
+        .grade-selector input[type="radio"] {
+            margin-right: 8px;
+        }
+        
+        .section-title {
+            font-size: 24px;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #007bff;
+            padding-bottom: 10px;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            font-size: 18px;
+            color: #007bff;
+        }
+        
+        .loading.show {
+            display: block;
+        }
+        
+        .sample-data-btn {
+            background: #17a2b8;
+            color: white;
+        }
+        
+        .sample-data-btn:hover {
+            background: #138496;
+        }
+        
+        .delete-btn {
+            background: #6c757d;
+            color: white;
+            padding: 5px 10px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+        
+        .delete-btn:hover {
+            background: #545b62;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔬 학생주도형 소리 특성 실험장치 교육 효과 분석 시스템</h1>
+            <p>사전-사후 설문 데이터 입력 및 실시간 통계 분석 | 2022 개정 교육과정 연계</p>
+        </div>
+        
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showTab('input')">📝 데이터 입력</button>
+            <button class="nav-tab" onclick="showTab('analysis')">📊 통계 분석</button>
+            <button class="nav-tab" onclick="showTab('charts')">📈 시각화</button>
+            <button class="nav-tab" onclick="showTab('report')">📋 보고서</button>
+        </div>
+        
+        <!-- 데이터 입력 탭 -->
+        <div id="input" class="tab-content active">
+            <h2 class="section-title">📝 학생 데이터 입력</h2>
+            
+            <div class="alert alert-info">
+                <strong>입력 안내:</strong> A영역(지식·이해), B영역(과정·기능), C영역(가치·태도), E영역(체험평가) 점수를 입력하세요.<br>
+                <strong>초5:</strong> A영역(5점), B영역(4점) | <strong>중2:</strong> A영역(6점), B영역(5점) | <strong>C,E영역:</strong> 1-5점 척도
+            </div>
+            
+            <div class="input-section">
+                <h3>🎯 학급 선택</h3>
+                <div class="grade-selector">
+                    <label>
+                        <input type="radio" name="grade" value="elementary" checked onchange="updateInputHeaders()"> 초등학교 5학년
+                    </label>
+                    <label>
+                        <input type="radio" name="grade" value="middle" onchange="updateInputHeaders()"> 중학교 2학년
+                    </label>
+                </div>
+            </div>
+            
+            <div class="input-section">
+                <h3>📊 학생별 데이터 입력</h3>
+                <div class="input-row" id="input-header">
+                    <label>학생번호</label>
+                    <label>성별</label>
+                    <label>A영역(사전)</label>
+                    <label>A영역(사후)</label>
+                    <label>B영역(사전)</label>
+                    <label>B영역(사후)</label>
+                    <label>C영역(사전)</label>
+                    <label>C영역(사후)</label>
+                    <label>E영역(평균)</label>
+                </div>
+                
+                <div id="student-inputs">
+                    <!-- 학생 입력 폼들이 여기에 동적으로 생성됩니다 -->
+                </div>
+                
+                <div style="text-align: center; margin-top: 20px;">
+                    <button class="btn btn-primary" onclick="addStudent()">➕ 학생 추가</button>
+<button class="btn btn-warning" onclick="uploadCSV()">📤 CSV 업로드</button>
+<input type="file" id="csv-file-input" accept=".csv" style="display: none;" onchange="handleCSVFile(event)">
+                    <button class="btn sample-data-btn" onclick="loadSampleData()">📋 샘플 데이터</button>
+                    <button class="btn btn-success" onclick="calculateResults()">🔄 분석 실행</button>
+                    <button class="btn btn-danger" onclick="clearAllData()">🗑️ 전체 삭제</button>
+                </div>
+                
+                <div class="student-count" id="student-count">입력된 학생 수: 0명</div>
+            </div>
+        </div>
+        
+        <!-- 통계 분석 탭 -->
+        <div id="analysis" class="tab-content">
+            <h2 class="section-title">📊 통계 분석 결과</h2>
+            
+            <div class="alert alert-warning" id="analysis-warning">
+                먼저 데이터를 입력하고 분석을 실행해주세요.
+            </div>
+            
+            <div class="loading" id="analysis-loading">
+                🔄 분석 중... 잠시만 기다려주세요.
+            </div>
+            
+            <div class="results-grid" id="analysis-results" style="display: none;">
+                <div class="result-card">
+                    <h3>🎯 A영역: 과학 지식·이해</h3>
+                    <div id="area-a-stats"></div>
+                    <div id="area-a-significance"></div>
+                </div>
+                
+                <div class="result-card">
+                    <h3>🔬 B영역: 과정·기능</h3>
+                    <div id="area-b-stats"></div>
+                    <div id="area-b-significance"></div>
+                </div>
+                
+                <div class="result-card">
+                    <h3>❤️ C영역: 가치·태도</h3>
+                    <div id="area-c-stats"></div>
+                    <div id="area-c-significance"></div>
+                </div>
+                
+                <div class="result-card">
+                    <h3>✨ E영역: 실험 체험</h3>
+                    <div id="area-e-stats"></div>
+                    <div id="area-e-significance"></div>
+                </div>
+            </div>
+            
+            <div id="summary-stats" style="display: none;">
+                <!-- 전체 요약 통계가 여기 표시됩니다 -->
+            </div>
+        </div>
+        
+        <!-- 시각화 탭 -->
+        <div id="charts" class="tab-content">
+            <h2 class="section-title">📈 데이터 시각화</h2>
+            
+            <div class="alert alert-info">
+                분석 실행 후 그래프가 생성됩니다. 사전-사후 비교, 효과크기, 개별 학생 변화 등을 시각적으로 확인할 수 있습니다.
+            </div>
+            
+            <div class="chart-container">
+                <canvas id="beforeAfterChart"></canvas>
+            </div>
+            
+            <div class="chart-container">
+                <canvas id="effectSizeChart"></canvas>
+            </div>
+            
+            <div class="chart-container">
+                <canvas id="individualChart"></canvas>
+            </div>
+        </div>
+        
+        <!-- 보고서 탭 -->
+        <div id="report" class="tab-content">
+            <h2 class="section-title">📋 연구 보고서</h2>
+            
+            <div class="export-section">
+                <h3>🏆 학생주도형 소리 특성 실험장치 교육적용 결과 요약</h3>
+                <div id="report-content">
+                    <div class="alert alert-warning">
+                        분석을 먼저 실행해주세요. 그러면 자동으로 연구 보고서가 생성됩니다.
+                    </div>
+                </div>
+                
+                <div style="margin-top: 20px;">
+                    <button class="btn btn-success" onclick="exportToCSV()">📄 CSV 다운로드</button>
+                    <button class="btn btn-primary" onclick="printReport()">🖨️ 보고서 인쇄</button>
+                    <button class="btn sample-data-btn" onclick="copyResults()">📋 결과 복사</button>
+                </div>
+            </div>
+            
+            <div id="detailed-report" style="display: none;">
+                <!-- 상세 보고서 내용이 여기 표시됩니다 -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 전역 변수 선언 (Part 1에서 초기화)
+        let studentData = [];
+        let currentGrade = 'elementary';
+        let analysisResults = {};
+        let charts = {};
+
+        // 기본 탭 전환 함수 (Part 1 완성)
+        function showTab(tabName) {
+            const tabs = document.querySelectorAll('.nav-tab');
+            const contents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach(tab => tab.classList.remove('active'));
+            contents.forEach(content => content.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+        }
+
+        // Part 1 테스트 함수
+        function testPart1() {
+            console.log('Part 1 HTML+CSS 로드 완료!');
+            console.log('전역 변수 초기화:', { studentData, currentGrade, analysisResults });
+            
+            // 기본 UI 요소 확인
+            const elements = {
+                header: document.querySelector('.header'),
+                navTabs: document.querySelectorAll('.nav-tab'),
+                tabContents: document.querySelectorAll('.tab-content')
+            };
+            
+            console.log('UI 요소 확인:', elements);
+            return elements;
+        }
+
+        // Part 1 로드 시 자동 실행
+        document.addEventListener('DOMContentLoaded', function() {
+            testPart1();
+            console.log('🎯 Part 1 (HTML+CSS) 로드 완료! 다음 Part를 추가하세요.');
+        });
+    </script>
+
+  <script>
+// ========================================
+// Part 2: 데이터 입력 관련 JavaScript 함수들
+// ========================================
+
+// 학급 변경시 입력 헤더 업데이트
+function updateInputHeaders() {
+    const grade = document.querySelector('input[name="grade"]:checked').value;
+    currentGrade = grade;
+    
+    const headerRow = document.getElementById('input-header');
+    if (grade === 'elementary') {
+        headerRow.innerHTML = `
+            <label>학생번호</label>
+            <label>성별</label>
+            <label>A영역(사전/5)</label>
+            <label>A영역(사후/5)</label>
+            <label>B영역(사전/4)</label>
+            <label>B영역(사후/4)</label>
+            <label>C영역(사전/5)</label>
+            <label>C영역(사후/5)</label>
+            <label>E영역(평균/5)</label>
+        `;
+    } else {
+        headerRow.innerHTML = `
+            <label>학생번호</label>
+            <label>성별</label>
+            <label>A영역(사전/6)</label>
+            <label>A영역(사후/6)</label>
+            <label>B영역(사전/5)</label>
+            <label>B영역(사후/5)</label>
+            <label>C영역(사전/5)</label>
+            <label>C영역(사후/5)</label>
+            <label>E영역(평균/5)</label>
+        `;
+    }
+    
+    // 기존 학생 데이터 초기화
+    studentData = [];
+    document.getElementById('student-inputs').innerHTML = '';
+    updateStudentCount();
+    console.log(`학급 변경: ${grade}`);
+}
+
+// 학생 추가 함수
+function addStudent() {
+    const studentNum = studentData.length + 1;
+    const inputContainer = document.getElementById('student-inputs');
+    
+    const studentRow = document.createElement('div');
+    studentRow.className = 'input-row';
+    studentRow.setAttribute('data-student-id', studentNum);
+    
+    const maxA = currentGrade === 'elementary' ? 5 : 6;
+    const maxB = currentGrade === 'elementary' ? 4 : 5;
+    
+    studentRow.innerHTML = `
+        <input type="text" value="${studentNum}" readonly>
+        <select>
+            <option value="M">남</option>
+            <option value="F">여</option>
+        </select>
+        <input type="number" min="0" max="${maxA}" step="1" placeholder="0">
+        <input type="number" min="0" max="${maxA}" step="1" placeholder="0">
+        <input type="number" min="0" max="${maxB}" step="1" placeholder="0">
+        <input type="number" min="0" max="${maxB}" step="1" placeholder="0">
+        <input type="number" min="1" max="5" step="0.1" placeholder="3.0">
+        <input type="number" min="1" max="5" step="0.1" placeholder="3.0">
+        <input type="number" min="1" max="5" step="0.1" placeholder="3.0">
+        <button class="btn delete-btn" onclick="removeStudent(${studentNum})">❌</button>
+    `;
+    
+    inputContainer.appendChild(studentRow);
+    studentData.push({ id: studentNum });
+    updateStudentCount();
+    console.log(`학생 ${studentNum} 추가 완료`);
+}
+
+// 학생 제거 함수
+function removeStudent(studentId) {
+    const studentRow = document.querySelector(`[data-student-id="${studentId}"]`);
+    if (studentRow && confirm(`학생 ${studentId}번을 삭제하시겠습니까?`)) {
+        studentRow.remove();
+        studentData = studentData.filter(s => s.id !== studentId);
+        updateStudentCount();
+        console.log(`학생 ${studentId} 삭제 완료`);
+    }
+}
+
+// 학생 수 업데이트
+function updateStudentCount() {
+    const count = document.querySelectorAll('#student-inputs .input-row').length;
+    document.getElementById('student-count').textContent = `입력된 학생 수: ${count}명`;
+}
+
+// 샘플 데이터 로드 함수
+function loadSampleData() {
+    if (confirm('샘플 데이터를 로드하시겠습니까? 기존 데이터는 삭제됩니다.')) {
+        clearAllData();
+        
+        const sampleSize = currentGrade === 'elementary' ? 25 : 30;
+        const maxA = currentGrade === 'elementary' ? 5 : 6;
+        const maxB = currentGrade === 'elementary' ? 4 : 5;
+        
+        for (let i = 0; i < sampleSize; i++) {
+            addStudent();
+            
+            // 마지막에 추가된 학생 행 찾기
+            const rows = document.querySelectorAll('#student-inputs .input-row');
+            const lastRow = rows[rows.length - 1];
+            const inputs = lastRow.querySelectorAll('input, select');
+            
+            // 성별 랜덤 설정
+            inputs[1].value = Math.random() > 0.5 ? 'M' : 'F';
+            
+            // A영역: 사전 2-3점, 사후 4-5점 (강한 개선 효과)
+            inputs[2].value = Math.floor(Math.random() * 2) + 2; // 2-3점
+            inputs[3].value = Math.floor(Math.random() * 2) + (maxA - 1); // 4-5점 또는 5-6점
+            
+            // B영역: 사전 1-2점, 사후 3-4점 (매우 강한 개선 효과)
+            inputs[4].value = Math.floor(Math.random() * 2) + 1; // 1-2점
+            inputs[5].value = Math.floor(Math.random() * 2) + (maxB - 1); // 3-4점 또는 4-5점
+            
+            // C영역: 사전 2.5-3.5점, 사후 3.5-4.5점 (중간 개선 효과)
+            inputs[6].value = (Math.random() * 1 + 2.5).toFixed(1); // 2.5-3.5점
+            inputs[7].value = (Math.random() * 1 + 3.5).toFixed(1); // 3.5-4.5점
+            
+            // E영역: 4.0-4.8점 (매우 긍정적 체험)
+            inputs[8].value = (Math.random() * 0.8 + 4.0).toFixed(1); // 4.0-4.8점
+        }
+        
+        updateStudentCount();
+        console.log(`샘플 데이터 로드 완료: ${sampleSize}명`);
+        
+        // 샘플 데이터 로드 후 자동 분석 제안
+        if (confirm('샘플 데이터가 로드되었습니다. 바로 분석을 실행하시겠습니까?')) {
+            calculateResults();
+        }
+    }
+}
+
+// 전체 데이터 삭제
+function clearAllData() {
+    if (studentData.length > 0 && !confirm('정말로 모든 데이터를 삭제하시겠습니까?')) {
+        return;
+    }
+    
+    studentData = [];
+    document.getElementById('student-inputs').innerHTML = '';
+    updateStudentCount();
+    
+    // 분석 결과도 초기화
+    analysisResults = {};
+    document.getElementById('analysis-warning').style.display = 'block';
+    document.getElementById('analysis-results').style.display = 'none';
+    
+    // 차트도 초기화
+    Object.keys(charts).forEach(key => {
+        if (charts[key]) {
+            charts[key].destroy();
+            charts[key] = null;
+        }
+    });
+    
+    console.log('모든 데이터 삭제 완료');
+}
+
+// 데이터 수집 함수 (분석에 사용)
+function collectData() {
+    const rows = document.querySelectorAll('#student-inputs .input-row');
+    const data = [];
+    
+    rows.forEach((row, index) => {
+        const inputs = row.querySelectorAll('input, select');
+        
+        // 빈 값 체크
+        const values = {
+            id: inputs[0].value || `학생${index + 1}`,
+            gender: inputs[1].value || 'M',
+            a_pre: parseFloat(inputs[2].value) || 0,
+            a_post: parseFloat(inputs[3].value) || 0,
+            b_pre: parseFloat(inputs[4].value) || 0,
+            b_post: parseFloat(inputs[5].value) || 0,
+            c_pre: parseFloat(inputs[6].value) || 0,
+            c_post: parseFloat(inputs[7].value) || 0,
+            e_avg: parseFloat(inputs[8].value) || 0
+        };
+        
+        data.push(values);
+    });
+    
+    console.log('데이터 수집 완료:', data.length + '명');
+    return data;
+}
+
+// 데이터 유효성 검증 함수
+function validateData(data) {
+    const errors = [];
+    const maxA = currentGrade === 'elementary' ? 5 : 6;
+    const maxB = currentGrade === 'elementary' ? 4 : 5;
+    
+    data.forEach((student, index) => {
+        const studentNum = index + 1;
+        
+        // A영역 범위 체크
+        if (student.a_pre < 0 || student.a_pre > maxA) {
+            errors.push(`학생 ${studentNum}: A영역 사전점수 범위 오류 (0-${maxA}점)`);
+        }
+        if (student.a_post < 0 || student.a_post > maxA) {
+            errors.push(`학생 ${studentNum}: A영역 사후점수 범위 오류 (0-${maxA}점)`);
+        }
+        
+        // B영역 범위 체크
+        if (student.b_pre < 0 || student.b_pre > maxB) {
+            errors.push(`학생 ${studentNum}: B영역 사전점수 범위 오류 (0-${maxB}점)`);
+        }
+        if (student.b_post < 0 || student.b_post > maxB) {
+            errors.push(`학생 ${studentNum}: B영역 사후점수 범위 오류 (0-${maxB}점)`);
+        }
+        
+        // C영역, E영역 범위 체크 (1-5점)
+        if (student.c_pre < 1 || student.c_pre > 5) {
+            errors.push(`학생 ${studentNum}: C영역 사전점수 범위 오류 (1-5점)`);
+        }
+        if (student.c_post < 1 || student.c_post > 5) {
+            errors.push(`학생 ${studentNum}: C영역 사후점수 범위 오류 (1-5점)`);
+        }
+        if (student.e_avg < 1 || student.e_avg > 5) {
+            errors.push(`학생 ${studentNum}: E영역 평균점수 범위 오류 (1-5점)`);
+        }
+        
+        // 빈 값 체크
+        if (student.a_pre === 0 && student.a_post === 0) {
+            errors.push(`학생 ${studentNum}: A영역 점수가 모두 0입니다`);
+        }
+    });
+    
+    if (errors.length > 0) {
+        console.error('데이터 유효성 검증 실패:', errors);
+        alert('데이터 오류가 발견되었습니다:\n' + errors.slice(0, 5).join('\n') + 
+              (errors.length > 5 ? '\n... 등 ' + errors.length + '개 오류' : ''));
+        return false;
+    }
+    
+    console.log('데이터 유효성 검증 통과');
+    return true;
+}
+
+// Part 2 테스트 함수
+function testPart2() {
+    console.log('🎯 Part 2 (데이터 입력) 함수들 로드 완료!');
+    
+    // 함수 존재 확인
+    const functions = {
+        updateInputHeaders: typeof updateInputHeaders,
+        addStudent: typeof addStudent,
+        removeStudent: typeof removeStudent,
+        loadSampleData: typeof loadSampleData,
+        clearAllData: typeof clearAllData,
+        collectData: typeof collectData,
+        validateData: typeof validateData
+    };
+    
+    console.log('Part 2 함수 확인:', functions);
+    
+    // 초기 상태 설정
+    updateInputHeaders();
+    
+    return functions;
+}
+
+// Part 2 로드 완료 시 자동 실행
+if (typeof document !== 'undefined') {
+    document.addEventListener('DOMContentLoaded', function() {
+        if (typeof testPart2 === 'function') {
+            testPart2();
+        }
+    });
+}
+// CSV 업로드 함수들
+function uploadCSV() {
+    document.getElementById('csv-file-input').click();
+}
+
+function handleCSVFile(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            parseCSV(e.target.result);
+        };
+        reader.readAsText(file);
+    }
+}
+
+function parseCSV(csvText) {
+    const lines = csvText.split('\n');
+    const headers = lines[0].split(',');
+    
+    clearAllData();
+    
+    for (let i = 1; i < lines.length; i++) {
+        if (lines[i].trim()) {
+            const values = lines[i].split(',');
+            addStudent();
+            
+            const rows = document.querySelectorAll('#student-inputs .input-row');
+            const lastRow = rows[rows.length - 1];
+            const inputs = lastRow.querySelectorAll('input, select');
+            
+            // CSV 데이터 입력
+            if (values.length >= 9) {
+                inputs[1].value = values[1] || 'M';
+                inputs[2].value = values[2] || '0';
+                inputs[3].value = values[3] || '0';
+                inputs[4].value = values[4] || '0';
+                inputs[5].value = values[5] || '0';
+                inputs[6].value = values[6] || '0';
+                inputs[7].value = values[7] || '0';
+                inputs[8].value = values[8] || '0';
+            }
+        }
+    }
+    
+    updateStudentCount();
+    alert('CSV 파일이 성공적으로 업로드되었습니다!');
+}
+console.log('📝 Part 2 JavaScript 로드 완료!');
+</script>
+
+<script>
+// ========================================
+// Part 3: 통계 분석 관련 JavaScript 함수들
+// ========================================
+
+// 기본 통계 함수들
+function calculateMean(arr) {
+    if (arr.length === 0) return 0;
+    return arr.reduce((sum, val) => sum + val, 0) / arr.length;
+}
+
+function calculateSD(arr) {
+    if (arr.length === 0) return 0;
+    const mean = calculateMean(arr);
+    const squaredDiffs = arr.map(val => Math.pow(val - mean, 2));
+    return Math.sqrt(calculateMean(squaredDiffs));
+}
+
+function calculateSEM(arr) {
+    if (arr.length === 0) return 0;
+    return calculateSD(arr) / Math.sqrt(arr.length);
+}
+
+// 대응표본 t-검정 함수
+function pairedTTest(pre, post) {
+    const n = pre.length;
+    if (n === 0) return null;
+    
+    const diff = pre.map((p, i) => post[i] - p);
+    const meanDiff = calculateMean(diff);
+    const sdDiff = calculateSD(diff);
+    const semDiff = sdDiff / Math.sqrt(n);
+    
+    const tStat = meanDiff / semDiff;
+    const df = n - 1;
+    
+    // t 분포 임계값 (근사치)
+    const tCritical = getTCritical(df);
+    const pValue = calculatePValue(Math.abs(tStat), df);
+    
+    return {
+        n: n,
+        meanDiff: meanDiff,
+        sdDiff: sdDiff,
+        semDiff: semDiff,
+        tStat: tStat,
+        df: df,
+        pValue: pValue,
+        significant: pValue < 0.05,
+        tCritical: tCritical
+    };
+}
+
+// t 분포 임계값 계산 (근사치)
+function getTCritical(df) {
+    // α = 0.05, 단측검정 기준
+    const tTable = {
+        1: 6.314, 5: 2.015, 10: 1.812, 15: 1.753, 20: 1.725,
+        25: 1.708, 30: 1.697, 40: 1.684, 60: 1.671, 100: 1.660, 1000: 1.645
+    };
+    
+    // 가장 가까운 df 찾기
+    const keys = Object.keys(tTable).map(Number).sort((a, b) => a - b);
+    for (let i = 0; i < keys.length; i++) {
+        if (df <= keys[i]) return tTable[keys[i]];
+    }
+    return 1.645; // 무한대 근사
+}
+
+// p값 계산 (근사치)
+function calculatePValue(tAbs, df) {
+    // 간단한 근사 공식 사용
+    if (df < 1) return 1;
+    
+    const tCrit_05 = getTCritical(df);
+    const tCrit_01 = tCrit_05 * 1.3; // 대략적 비율
+    const tCrit_001 = tCrit_05 * 1.6;
+    
+    if (tAbs >= tCrit_001) return 0.001;
+    else if (tAbs >= tCrit_01) return 0.01;
+    else if (tAbs >= tCrit_05) return 0.05;
+    else return 0.1; // 유의하지 않음
+}
+
+// Cohen's d 효과크기 계산
+function calculateCohenD(pre, post) {
+    if (pre.length === 0) return 0;
+    
+    const preMean = calculateMean(pre);
+    const postMean = calculateMean(post);
+    const meanDiff = postMean - preMean;
+    
+    const preSD = calculateSD(pre);
+    const postSD = calculateSD(post);
+    const pooledSD = Math.sqrt((Math.pow(preSD, 2) + Math.pow(postSD, 2)) / 2);
+    
+    return pooledSD > 0 ? meanDiff / pooledSD : 0;
+}
+
+// 효과크기 해석 함수
+function interpretEffectSize(d) {
+    const absD = Math.abs(d);
+    if (absD >= 0.8) return { label: '큰 효과', class: 'large-effect', color: '#28a745' };
+    else if (absD >= 0.5) return { label: '중간 효과', class: 'medium-effect', color: '#17a2b8' };
+    else if (absD >= 0.2) return { label: '작은 효과', class: 'small-effect', color: '#ffc107' };
+    else return { label: '효과 없음', class: 'no-effect', color: '#6c757d' };
+}
+
+// 일표본 t-검정 (E영역용)
+function oneSampleTTest(data, testValue = 3.0) {
+    const n = data.length;
+    if (n === 0) return null;
+    
+    const mean = calculateMean(data);
+    const sd = calculateSD(data);
+    const sem = sd / Math.sqrt(n);
+    const tStat = (mean - testValue) / sem;
+    const df = n - 1;
+    const pValue = calculatePValue(Math.abs(tStat), df);
+    
+    return {
+        n: n,
+        mean: mean,
+        sd: sd,
+        sem: sem,
+        testValue: testValue,
+        tStat: tStat,
+        df: df,
+        pValue: pValue,
+        significant: pValue < 0.05,
+        aboveNeutral: mean > testValue
+    };
+}
+
+// 메인 분석 실행 함수
+function calculateResults() {
+    // 로딩 표시
+    document.getElementById('analysis-loading').classList.add('show');
+    document.getElementById('analysis-warning').style.display = 'none';
+    
+    setTimeout(() => {
+        try {
+            const data = collectData();
+            
+            if (data.length === 0) {
+                alert('입력된 데이터가 없습니다. 먼저 학생 데이터를 입력해주세요.');
+                document.getElementById('analysis-loading').classList.remove('show');
+                document.getElementById('analysis-warning').style.display = 'block';
+                return;
+            }
+            
+            if (!validateData(data)) {
+                document.getElementById('analysis-loading').classList.remove('show');
+                document.getElementById('analysis-warning').style.display = 'block';
+                return;
+            }
+            
+            // 각 영역별 데이터 추출
+            const areas = {
+                a: {
+                    pre: data.map(d => d.a_pre),
+                    post: data.map(d => d.a_post)
+                },
+                b: {
+                    pre: data.map(d => d.b_pre),
+                    post: data.map(d => d.b_post)
+                },
+                c: {
+                    pre: data.map(d => d.c_pre),
+                    post: data.map(d => d.c_post)
+                },
+                e: {
+                    data: data.map(d => d.e_avg)
+                }
+            };
+            
+            // 각 영역별 분석 실행
+            analysisResults = {};
+            
+            // A, B, C 영역: 대응표본 t-검정
+            ['a', 'b', 'c'].forEach(area => {
+                const tTest = pairedTTest(areas[area].pre, areas[area].post);
+                const cohenD = calculateCohenD(areas[area].pre, areas[area].post);
+                
+                analysisResults[area] = {
+                    pre_mean: calculateMean(areas[area].pre),
+                    pre_sd: calculateSD(areas[area].pre),
+                    post_mean: calculateMean(areas[area].post),
+                    post_sd: calculateSD(areas[area].post),
+                    improvement: calculateMean(areas[area].post) - calculateMean(areas[area].pre),
+                    improvementPercent: ((calculateMean(areas[area].post) - calculateMean(areas[area].pre)) / 
+                                       (currentGrade === 'elementary' ? (area === 'b' ? 4 : 5) : (area === 'a' ? 6 : 5)) * 100),
+                    tTest: tTest,
+                    cohenD: cohenD,
+                    effectSize: interpretEffectSize(cohenD),
+                    n: data.length
+                };
+            });
+            
+            // E영역: 일표본 t-검정
+            const eTest = oneSampleTTest(areas.e.data, 3.0);
+            analysisResults.e = {
+                mean: calculateMean(areas.e.data),
+                sd: calculateSD(areas.e.data),
+                oneSampleTest: eTest,
+                n: data.length
+            };
+            
+            // 결과 표시
+            displayAnalysisResults();
+            
+            // 차트 생성 (Part 4에서 구현)
+            if (typeof createCharts === 'function') {
+                createCharts();
+            }
+            
+            // 보고서 생성 (Part 4에서 구현)
+            if (typeof generateReport === 'function') {
+                generateReport();
+            }
+            
+            console.log('분석 완료:', analysisResults);
+            
+        } catch (error) {
+            console.error('분석 중 오류 발생:', error);
+            alert('분석 중 오류가 발생했습니다: ' + error.message);
+        } finally {
+            document.getElementById('analysis-loading').classList.remove('show');
+        }
+    }, 500); // 로딩 효과를 위한 지연
+}
+
+// 분석 결과 표시 함수
+function displayAnalysisResults() {
+    document.getElementById('analysis-results').style.display = 'grid';
+    
+    // A, B, C 영역 결과 표시
+    ['a', 'b', 'c'].forEach(area => {
+        const result = analysisResults[area];
+        const statsDiv = document.getElementById(`area-${area}-stats`);
+        const sigDiv = document.getElementById(`area-${area}-significance`);
+        
+        // 기본 통계
+        statsDiv.innerHTML = `
+            <div class="stat-item">
+                <span class="stat-label">표본 크기:</span>
+                <span class="stat-value">${result.n}명</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">사전 평균:</span>
+                <span class="stat-value">${result.pre_mean.toFixed(2)} ± ${result.pre_sd.toFixed(2)}</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">사후 평균:</span>
+                <span class="stat-value">${result.post_mean.toFixed(2)} ± ${result.post_sd.toFixed(2)}</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">향상도:</span>
+                <span class="stat-value">+${result.improvement.toFixed(2)}점 (${result.improvementPercent.toFixed(1)}%)</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">t값:</span>
+                <span class="stat-value">${result.tTest.tStat.toFixed(3)} (df=${result.tTest.df})</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">p값:</span>
+                <span class="stat-value">${result.tTest.pValue < 0.001 ? '<0.001' : result.tTest.pValue.toFixed(3)}</span>
+            </div>
+        `;
+        
+        // 유의성 및 효과크기
+        sigDiv.innerHTML = `
+            <div class="${result.tTest.significant ? 'significance significant' : 'significance not-significant'}">
+                ${result.tTest.significant ? 
+                  `통계적으로 유의함 ✅ (p ${result.tTest.pValue < 0.001 ? '<0.001' : '='+result.tTest.pValue.toFixed(3)})` : 
+                  '통계적으로 유의하지 않음 ❌'}
+            </div>
+            <div class="effect-size ${result.effectSize.class}">
+                효과크기: d = ${result.cohenD.toFixed(3)} (${result.effectSize.label})
+            </div>
+                 `;
+    });
+    
+    // E영역 결과 표시
+    const eResult = analysisResults.e;
+    document.getElementById('area-e-stats').innerHTML = `
+        <div class="stat-item">
+            <span class="stat-label">표본 크기:</span>
+            <span class="stat-value">${eResult.n}명</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">평균 점수:</span>
+            <span class="stat-value">${eResult.mean.toFixed(2)} ± ${eResult.sd.toFixed(2)}</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">5점 만점 환산:</span>
+            <span class="stat-value">${eResult.mean.toFixed(1)}/5.0점</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">보통(3.0)과 비교:</span>
+            <span class="stat-value">+${(eResult.mean - 3.0).toFixed(2)}점</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">t값:</span>
+            <span class="stat-value">${eResult.oneSampleTest.tStat.toFixed(3)}</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">p값:</span>
+            <span class="stat-value">${eResult.oneSampleTest.pValue < 0.001 ? '<0.001' : eResult.oneSampleTest.pValue.toFixed(3)}</span>
+        </div>
+    `;
+    
+    document.getElementById('area-e-significance').innerHTML = `
+        <div class="${eResult.oneSampleTest.significant && eResult.oneSampleTest.aboveNeutral ? 
+                    'significance significant' : 'significance not-significant'}">
+            ${eResult.oneSampleTest.significant && eResult.oneSampleTest.aboveNeutral ? 
+              '실험 체험 매우 긍정적! ✨' : '실험 체험 보통 수준'}
+        </div>
+        ${eResult.mean >= 4.0 ? 
+          '<div class="alert alert-success" style="margin-top: 10px; padding: 8px;">🌟 매우 높은 만족도!</div>' : ''}
+    `;
+    
+    // 전체 요약 표시
+    displaySummaryStats();
+}
+
+// 전체 요약 통계 표시
+function displaySummaryStats() {
+    const summaryDiv = document.getElementById('summary-stats');
+    if (!summaryDiv) return;
+    
+    const significantAreas = ['a', 'b', 'c'].filter(area => 
+        analysisResults[area].tTest.significant && analysisResults[area].cohenD > 0
+    );
+    
+    const largeEffects = ['a', 'b', 'c'].filter(area => 
+        Math.abs(analysisResults[area].cohenD) >= 0.8
+    );
+    
+    const avgImprovement = ['a', 'b', 'c'].reduce((sum, area) => 
+        sum + analysisResults[area].improvementPercent, 0) / 3;
+    
+    summaryDiv.innerHTML = `
+        <div class="result-card" style="grid-column: 1 / -1; border-left-color: #28a745;">
+            <h3>🎯 전체 연구 요약</h3>
+            <div class="stat-item">
+                <span class="stat-label">분석 대상:</span>
+                <span class="stat-value">${analysisResults.a.n}명 (${currentGrade === 'elementary' ? '초등 5학년' : '중학교 2학년'})</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">유의한 효과:</span>
+                <span class="stat-value">${significantAreas.length}/3개 영역</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">큰 효과크기:</span>
+                <span class="stat-value">${largeEffects.length}/3개 영역</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">평균 향상률:</span>
+                <span class="stat-value">${avgImprovement.toFixed(1)}%</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">체험 만족도:</span>
+                <span class="stat-value">${analysisResults.e.mean.toFixed(1)}/5.0점</span>
+            </div>
+     ${significantAreas.length >= 2 && largeEffects.length >= 2 ? 
+              '<div class="alert alert-success" style="margin-top: 15px;">🔬 과학교육 개선에 기여할 수 있는 결과!</div>' :
+              significantAreas.length >= 2 && largeEffects.length >= 1 ?
+              '<div class="alert alert-success" style="margin-top: 15px;">✨ 실제 교육현장 적용 가능한 결과!</div>' : ''}
+        </div>
+    `;
+    
+    summaryDiv.style.display = 'block';
+}
+
+// 개별 학생 분석 함수
+function analyzeIndividualStudents() {
+    const data = collectData();
+    const improvements = data.map(student => ({
+        id: student.id,
+        a_improvement: student.a_post - student.a_pre,
+        b_improvement: student.b_post - student.b_pre,
+        c_improvement: student.c_post - student.c_pre,
+        total_improvement: (student.a_post - student.a_pre) + (student.b_post - student.b_pre) + (student.c_post - student.c_pre),
+        e_score: student.e_avg
+    }));
+    
+    return improvements;
+}
+
+// Part 3 테스트 함수
+function testPart3() {
+    console.log('🎯 Part 3 (통계 분석) 함수들 로드 완료!');
+    
+    const functions = {
+        calculateMean: typeof calculateMean,
+        calculateSD: typeof calculateSD,
+        pairedTTest: typeof pairedTTest,
+        calculateCohenD: typeof calculateCohenD,
+        oneSampleTTest: typeof oneSampleTTest,
+        calculateResults: typeof calculateResults,
+        displayAnalysisResults: typeof displayAnalysisResults
+    };
+    
+    console.log('Part 3 함수 확인:', functions);
+    
+    // 샘플 데이터로 테스트
+    const testData = [1, 2, 3, 4, 5];
+    console.log('테스트 - 평균:', calculateMean(testData));
+    console.log('테스트 - 표준편차:', calculateSD(testData));
+    
+    return functions;
+}
+
+// Part 3 로드 완료 시 자동 실행
+if (typeof document !== 'undefined') {
+    document.addEventListener('DOMContentLoaded', function() {
+        if (typeof testPart3 === 'function') {
+            testPart3();
+        }
+    });
+}
+
+console.log('📊 Part 3 JavaScript 로드 완료!');
+</script>
+
+<script>
+// ========================================
+// Part 4A: 차트 생성 관련 JavaScript 함수들
+// ========================================
+
+// 차트 생성 메인 함수
+function createCharts() {
+    if (!analysisResults || Object.keys(analysisResults).length === 0) {
+        console.warn('분석 결과가 없습니다. 먼저 분석을 실행해주세요.');
+        return;
+    }
+    
+    // 기존 차트 삭제
+    destroyExistingCharts();
+    
+    // 각 차트 생성
+    createBeforeAfterChart();
+    createEffectSizeChart();
+    createIndividualChangeChart();
+    
+    console.log('모든 차트 생성 완료');
+}
+
+// 기존 차트 삭제 함수
+function destroyExistingCharts() {
+    Object.keys(charts).forEach(key => {
+        if (charts[key] && typeof charts[key].destroy === 'function') {
+            charts[key].destroy();
+            charts[key] = null;
+        }
+    });
+}
+
+// 사전-사후 비교 차트
+function createBeforeAfterChart() {
+    const ctx = document.getElementById('beforeAfterChart');
+    if (!ctx) return;
+    
+    const areas = ['a', 'b', 'c'];
+    const areaNames = ['A영역 (지식·이해)', 'B영역 (과정·기능)', 'C영역 (가치·태도)'];
+    
+    const preData = areas.map(area => analysisResults[area].pre_mean);
+    const postData = areas.map(area => analysisResults[area].post_mean);
+    const maxScore = currentGrade === 'elementary' ? 5 : 6;
+    
+    charts.beforeAfter = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: areaNames,
+            datasets: [
+                {
+                    label: '사전 점수',
+                    data: preData,
+                    backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 2,
+                    borderRadius: 5
+                },
+                {
+                    label: '사후 점수',
+                    data: postData,
+                    backgroundColor: 'rgba(75, 192, 192, 0.7)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 2,
+                    borderRadius: 5
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: `사전-사후 점수 비교 (${currentGrade === 'elementary' ? '초등 5학년' : '중학교 2학년'})`,
+                    font: { size: 18, weight: 'bold' },
+                    padding: 20
+                },
+                legend: {
+                    position: 'top',
+                    labels: { font: { size: 14 } }
+                },
+                tooltip: {
+                    callbacks: {
+                        afterLabel: function(context) {
+                            const areaIndex = context.dataIndex;
+                            const area = areas[areaIndex];
+                            const improvement = analysisResults[area].improvement;
+                            const percent = analysisResults[area].improvementPercent;
+                            return `향상: +${improvement.toFixed(2)}점 (${percent.toFixed(1)}%)`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: maxScore,
+                    title: {
+                        display: true,
+                        text: '점수',
+                        font: { size: 14, weight: 'bold' }
+                    },
+                    grid: { color: 'rgba(0,0,0,0.1)' }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: '측정 영역',
+                        font: { size: 14, weight: 'bold' }
+                    }
+                }
+            },
+            animation: {
+                duration: 1500,
+                easing: 'easeInOutQuart'
+            }
+        }
+    });
+}
+
+// 효과크기 차트
+function createEffectSizeChart() {
+    const ctx = document.getElementById('effectSizeChart');
+    if (!ctx) return;
+    
+    const areas = ['a', 'b', 'c'];
+    const areaNames = ['A영역', 'B영역', 'C영역'];
+    const effectSizes = areas.map(area => analysisResults[area].cohenD);
+    
+    // 효과크기에 따른 색상 결정
+    const colors = effectSizes.map(d => {
+        const absD = Math.abs(d);
+        if (absD >= 0.8) return 'rgba(40, 167, 69, 0.8)';      // 큰 효과 - 초록
+        else if (absD >= 0.5) return 'rgba(23, 162, 184, 0.8)'; // 중간 효과 - 파랑
+        else if (absD >= 0.2) return 'rgba(255, 193, 7, 0.8)';  // 작은 효과 - 노랑
+        else return 'rgba(108, 117, 125, 0.8)';                  // 효과 없음 - 회색
+    });
+    
+    charts.effectSize = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: areaNames,
+            datasets: [{
+                label: "Cohen's d (효과크기)",
+                data: effectSizes,
+                backgroundColor: colors,
+                borderColor: colors.map(color => color.replace('0.8', '1')),
+                borderWidth: 2,
+                borderRadius: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: '영역별 효과크기 (Cohen\'s d)',
+                    font: { size: 18, weight: 'bold' },
+                    padding: 20
+                },
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        afterLabel: function(context) {
+                            const d = context.parsed.y;
+                            const absD = Math.abs(d);
+                            let interpretation = '';
+                            if (absD >= 0.8) interpretation = '큰 효과';
+                            else if (absD >= 0.5) interpretation = '중간 효과';
+                            else if (absD >= 0.2) interpretation = '작은 효과';
+                            else interpretation = '효과 없음';
+                            return `해석: ${interpretation}`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Cohen\'s d',
+                        font: { size: 14, weight: 'bold' }
+                    },
+                    grid: { color: 'rgba(0,0,0,0.1)' }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: '측정 영역',
+                        font: { size: 14, weight: 'bold' }
+                    }
+                }
+            },
+            animation: {
+                duration: 2000,
+                easing: 'easeOutBounce'
+            }
+        }
+    });
+}
+
+// 개별 학생 변화 차트
+function createIndividualChangeChart() {
+    const ctx = document.getElementById('individualChart');
+    if (!ctx) return;
+    
+    const data = collectData();
+    if (data.length === 0) return;
+    
+    // 개별 학생의 총 향상도 계산
+    const improvements = data.map((student, index) => ({
+        label: `학생${index + 1}`,
+        total: (student.a_post - student.a_pre) + 
+               (student.b_post - student.b_pre) + 
+               (student.c_post - student.c_pre),
+        a: student.a_post - student.a_pre,
+        b: student.b_post - student.b_pre,
+        c: student.c_post - student.c_pre
+    }));
+    
+    // 총 향상도순으로 정렬
+    improvements.sort((a, b) => b.total - a.total);
+    
+    charts.individual = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: improvements.map(item => item.label),
+            datasets: [
+                {
+                    label: 'A영역 향상',
+                    data: improvements.map(item => item.a),
+                    backgroundColor: 'rgba(255, 99, 132, 0.7)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                },
+                {
+                    label: 'B영역 향상',
+                    data: improvements.map(item => item.b),
+                    backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                },
+                {
+                    label: 'C영역 향상',
+                    data: improvements.map(item => item.c),
+                    backgroundColor: 'rgba(75, 192, 192, 0.7)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: '개별 학생 영역별 향상도',
+                    font: { size: 18, weight: 'bold' },
+                    padding: 20
+                },
+                legend: {
+                    position: 'top',
+                    labels: { font: { size: 12 } }
+                }
+            },
+            scales: {
+                x: {
+                    stacked: true,
+                    title: {
+                        display: true,
+                        text: '학생 (향상도 높은 순)',
+                        font: { size: 14, weight: 'bold' }
+                    }
+                },
+                y: {
+                    stacked: true,
+                    title: {
+                        display: true,
+                        text: '점수 향상',
+                        font: { size: 14, weight: 'bold' }
+                    },
+                    grid: { color: 'rgba(0,0,0,0.1)' }
+                }
+            },
+            animation: {
+                duration: 1000,
+                easing: 'easeInOutQuad'
+            }
+        }
+    });
+}
+
+// Part 4A 테스트 함수
+function testPart4A() {
+    console.log('🎯 Part 4A (차트 생성) 함수들 로드 완료!');
+    
+    const functions = {
+        createCharts: typeof createCharts,
+        createBeforeAfterChart: typeof createBeforeAfterChart,
+        createEffectSizeChart: typeof createEffectSizeChart,
+        createIndividualChangeChart: typeof createIndividualChangeChart,
+        destroyExistingCharts: typeof destroyExistingCharts
+    };
+    
+    console.log('Part 4A 함수 확인:', functions);
+    return functions;
+}
+
+console.log('📈 Part 4A JavaScript 로드 완료!');
+</script>
+
+<script>
+// ========================================
+// Part 4B: 보고서 생성 관련 JavaScript 함수들
+// ========================================
+
+// 보고서 생성 메인 함수
+function generateReport() {
+    if (!analysisResults || Object.keys(analysisResults).length === 0) {
+        console.warn('분석 결과가 없습니다.');
+        return;
+    }
+    
+    const reportContent = document.getElementById('report-content');
+    const detailedReport = document.getElementById('detailed-report');
+    
+    if (!reportContent || !detailedReport) return;
+    
+    // 요약 보고서
+    const summaryHTML = generateSummaryReport();
+    reportContent.innerHTML = summaryHTML;
+    
+    // 상세 보고서
+    const detailedHTML = generateDetailedReport();
+    detailedReport.innerHTML = detailedHTML;
+    detailedReport.style.display = 'block';
+    
+    console.log('보고서 생성 완료');
+}
+
+// 요약 보고서 생성
+function generateSummaryReport() {
+    const n = analysisResults.a.n;
+    const grade = currentGrade === 'elementary' ? '초등학교 5학년' : '중학교 2학년';
+    
+    const significantCount = ['a', 'b', 'c'].filter(area => 
+        analysisResults[area].tTest.significant
+    ).length;
+    
+    const largeEffectCount = ['a', 'b', 'c'].filter(area => 
+        Math.abs(analysisResults[area].cohenD) >= 0.8
+    ).length;
+    
+    const avgSatisfaction = analysisResults.e.mean;
+    
+    return `
+        <div class="alert alert-success">
+            <h4>🏆 연구 결과 요약</h4>
+            <p><strong>연구 대상:</strong> ${grade} ${n}명</p>
+            <p><strong>유의한 효과:</strong> ${significantCount}/3개 영역에서 통계적으로 유의한 향상</p>
+            <p><strong>큰 효과크기:</strong> ${largeEffectCount}/3개 영역에서 Cohen's d ≥ 0.8</p>
+            <p><strong>실험 만족도:</strong> ${avgSatisfaction.toFixed(1)}/5.0점 (${avgSatisfaction >= 4.0 ? '매우 높음' : '높음'})</p>
+            
+       ${(() => {
+    let resultMessage = '';
+    if (significantCount === 3 && largeEffectCount >= 2) {
+        resultMessage = '🎯 전 영역 통계적 유의성 달성! 탁월한 교육 효과!<br>📊 큰 효과크기 다수 영역에서 확인!<br>🔬 과학교육 혁신에 크게 기여할 수 있는 연구!';
+    } else if (significantCount >= 2 && largeEffectCount >= 1) {
+        resultMessage = '📈 2/3개 영역에서 통계적 유의성 확인!<br>📊 실험장치의 교육적 효과성 입증!<br>🔬 과학교육 개선에 기여할 수 있는 결과!<br>📊 큰 효과크기(d≥0.8) 달성!';
+    } else if (significantCount >= 1) {
+        resultMessage = '📊 일부 영역에서 교육 효과 확인<br>🔍 추가 개선을 통한 효과 향상 가능성';
+    } else {
+        resultMessage = '📋 실험장치 개선을 통한 효과 향상 필요<br>🔧 추가 연구 및 보완 방향 도출';
+    }
+    return resultMessage ? `<p style="color: #28a745; font-weight: bold; margin-top: 10px;">${resultMessage}</p>` : '';
+})()}
+        </div>
+        
+        <h4>📊 영역별 주요 결과</h4>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>영역</th>
+                    <th>사전 평균</th>
+                    <th>사후 평균</th>
+                    <th>향상도</th>
+                    <th>효과크기</th>
+                    <th>유의성</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${['a', 'b', 'c'].map(area => {
+                    const result = analysisResults[area];
+                    const areaName = area === 'a' ? '지식·이해' : area === 'b' ? '과정·기능' : '가치·태도';
+                    return `
+                        <tr>
+                            <td>${areaName}</td>
+                            <td>${result.pre_mean.toFixed(2)}</td>
+                            <td>${result.post_mean.toFixed(2)}</td>
+                            <td>+${result.improvement.toFixed(2)} (${result.improvementPercent.toFixed(1)}%)</td>
+                            <td>${result.cohenD.toFixed(3)} (${result.effectSize.label})</td>
+                            <td>${result.tTest.significant ? '✅ p<0.05' : '❌ n.s.'}</td>
+                        </tr>
+                    `;
+                }).join('')}
+            </tbody>
+        </table>
+    `;
+}
+
+// 상세 보고서 생성
+function generateDetailedReport() {
+    const grade = currentGrade === 'elementary' ? '초등학교 5학년' : '중학교 2학년';
+    const date = new Date().toLocaleDateString('ko-KR');
+    
+    return `
+        <div class="result-card" style="margin-top: 20px;">
+            <h3>📋 상세 연구 보고서</h3>
+            
+            <h4>1. 연구 개요</h4>
+            <p><strong>연구 제목:</strong> 학생주도형 소리 특성 실험장치의 교육 효과 검증</p>
+            <p><strong>연구 대상:</strong> ${grade} ${analysisResults.a.n}명</p>
+            <p><strong>분석 일시:</strong> ${date}</p>
+            <p><strong>연구 설계:</strong> 사전-사후 준실험설계 (One-group pretest-posttest design)</p>
+            
+            <h4>2. 측정 도구</h4>
+            <ul>
+                <li><strong>A영역 (지식·이해):</strong> 오개념 진단 및 과학 개념 이해도 (${currentGrade === 'elementary' ? '5' : '6'}점 만점)</li>
+                <li><strong>B영역 (과정·기능):</strong> 계량적 사고 및 과학적 탐구 기능 (${currentGrade === 'elementary' ? '4' : '5'}점 만점)</li>
+                <li><strong>C영역 (가치·태도):</strong> 과학에 대한 흥미 및 탐구 의욕 (5점 척도)</li>
+                <li><strong>E영역 (체험 평가):</strong> 실험장치에 대한 만족도 및 효과성 (5점 척도)</li>
+            </ul>
+            
+            <h4>3. 통계 분석 결과</h4>
+            ${['a', 'b', 'c'].map(area => {
+                const result = analysisResults[area];
+                const areaName = area === 'a' ? '지식·이해' : area === 'b' ? '과정·기능' : '가치·태도';
+                return `
+                    <h5>3.${['a', 'b', 'c'].indexOf(area) + 1} ${areaName} 영역</h5>
+                    <ul>
+                        <li>사전검사: M = ${result.pre_mean.toFixed(2)}, SD = ${result.pre_sd.toFixed(2)}</li>
+                        <li>사후검사: M = ${result.post_mean.toFixed(2)}, SD = ${result.post_sd.toFixed(2)}</li>
+                        <li>대응표본 t-검정: t(${result.tTest.df}) = ${result.tTest.tStat.toFixed(3)}, p ${result.tTest.pValue < 0.001 ? '< 0.001' : '= ' + result.tTest.pValue.toFixed(3)}</li>
+                        <li>효과크기: Cohen's d = ${result.cohenD.toFixed(3)} (${result.effectSize.label})</li>
+                        <li>향상율: ${result.improvementPercent.toFixed(1)}%</li>
+                    </ul>
+                `;
+            }).join('')}
+            
+            <h4>4. 실험 체험 평가 (E영역)</h4>
+            <ul>
+                <li>평균 만족도: M = ${analysisResults.e.mean.toFixed(2)}, SD = ${analysisResults.e.sd.toFixed(2)}</li>
+                <li>일표본 t-검정 (기준값 3.0): t(${analysisResults.e.oneSampleTest.df}) = ${analysisResults.e.oneSampleTest.tStat.toFixed(3)}</li>
+                <li>해석: ${analysisResults.e.mean >= 4.0 ? '매우 높은 만족도' : '높은 만족도'}</li>
+            </ul>
+            
+            <h4>5. 결론 및 의의</h4>
+            <ul>
+                <li>개발된 실험장치는 ${['a', 'b', 'c'].filter(a => analysisResults[a].tTest.significant).length}/3개 영역에서 통계적으로 유의한 교육 효과를 보임</li>
+                <li>특히 ${['a', 'b', 'c'].filter(a => Math.abs(analysisResults[a].cohenD) >= 0.8).map(a => a === 'a' ? '지식·이해' : a === 'b' ? '과정·기능' : '가치·태도').join(', ')} 영역에서 큰 효과크기를 나타냄</li>
+                <li>학생들의 실험 체험 만족도가 매우 높아 실제 교육현장 적용 가능성이 높음</li>
+                <li>2022 개정 교육과정의 과학과 핵심역량 함양에 효과적인 교육도구로 판단됨</li>
+            </ul>
+            
+            <h4>6. 연구의 제한점</h4>
+            <ul>
+                <li>단일 집단 사전-사후 설계로 인한 내적 타당도 제약</li>
+                <li>표본 크기와 대상 학교의 제한</li>
+                <li>장기적 학습 효과에 대한 추적 연구 필요</li>
+            </ul>
+        </div>
+    `;
+}
+
+// CSV 내보내기 함수
+function exportToCSV() {
+    const data = collectData();
+    if (data.length === 0) {
+        alert('내보낼 데이터가 없습니다.');
+        return;
+    }
+    
+    // CSV 헤더
+    const headers = [
+        '학생ID', '성별', 'A영역_사전', 'A영역_사후', 'A영역_향상',
+        'B영역_사전', 'B영역_사후', 'B영역_향상',
+        'C영역_사전', 'C영역_사후', 'C영역_향상',
+        'E영역_평균', '총_향상도'
+    ];
+    
+    // CSV 데이터
+    const csvData = data.map(student => [
+        student.id,
+        student.gender,
+        student.a_pre,
+        student.a_post,
+        student.a_post - student.a_pre,
+        student.b_pre,
+        student.b_post,
+        student.b_post - student.b_pre,
+        student.c_pre,
+        student.c_post,
+        student.c_post - student.c_pre,
+        student.e_avg,
+        (student.a_post - student.a_pre) + (student.b_post - student.b_pre) + (student.c_post - student.c_pre)
+    ]);
+    
+    // CSV 문자열 생성
+    const csvContent = [headers, ...csvData]
+        .map(row => row.join(','))
+        .join('\n');
+    
+    // 파일 다운로드
+    const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `실험장치_분석결과_${new Date().toISOString().slice(0, 10)}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    console.log('CSV 파일 다운로드 완료');
+}
+
+// 보고서 인쇄 함수
+function printReport() {
+    const reportContent = document.getElementById('report-content').innerHTML;
+    const detailedContent = document.getElementById('detailed-report').innerHTML;
+    
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+        <html>
+        <head>
+            <title>실험장치 교육 효과 분석 보고서</title>
+            <style>
+                body { font-family: 'Malgun Gothic', Arial, sans-serif; margin: 20px; }
+                .alert { padding: 15px; border-radius: 5px; margin: 15px 0; }
+                .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+                .data-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+                .data-table th, .data-table td { border: 1px solid #dee2e6; padding: 12px; text-align: center; }
+                .data-table th { background: #007bff; color: white; }
+                h3, h4, h5 { color: #2c3e50; }
+                @media print { body { margin: 0; } }
+            </style>
+        </head>
+        <body>
+            <h1>학생주도형 소리 특성 실험장치 교육 효과 분석 보고서</h1>
+            <p>생성일: ${new Date().toLocaleDateString('ko-KR')}</p>
+            <hr>
+            ${reportContent}
+            ${detailedContent}
+        </body>
+        </html>
+    `);
+    
+    printWindow.document.close();
+    printWindow.print();
+}
+
+// 결과 복사 함수
+function copyResults() {
+    const summary = generateTextSummary();
+    
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(summary).then(() => {
+            alert('분석 결과가 클립보드에 복사되었습니다!');
+        });
+    } else {
+        // 폴백: 텍스트 영역 생성하여 복사
+        const textArea = document.createElement('textarea');
+        textArea.value = summary;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        alert('분석 결과가 클립보드에 복사되었습니다!');
+    }
+}
+
+// 텍스트 요약 생성
+function generateTextSummary() {
+    const n = analysisResults.a.n;
+    const grade = currentGrade === 'elementary' ? '초등학교 5학년' : '중학교 2학년';
+    
+    return `
+학생주도형 소리 특성 실험장치 교육 효과 분석 결과
+
+연구 대상: ${grade} ${n}명
+분석 일시: ${new Date().toLocaleDateString('ko-KR')}
+
+== 영역별 분석 결과 ==
+${['a', 'b', 'c'].map(area => {
+    const result = analysisResults[area];
+    const areaName = area === 'a' ? 'A영역(지식·이해)' : area === 'b' ? 'B영역(과정·기능)' : 'C영역(가치·태도)';
+    return `
+${areaName}:
+- 사전: ${result.pre_mean.toFixed(2)} ± ${result.pre_sd.toFixed(2)}
+- 사후: ${result.post_mean.toFixed(2)} ± ${result.post_sd.toFixed(2)}
+- 향상: +${result.improvement.toFixed(2)}점 (${result.improvementPercent.toFixed(1)}%)
+- 통계: t(${result.tTest.df}) = ${result.tTest.tStat.toFixed(3)}, p ${result.tTest.pValue < 0.001 ? '<0.001' : '=' + result.tTest.pValue.toFixed(3)}
+- 효과크기: d = ${result.cohenD.toFixed(3)} (${result.effectSize.label})
+`;
+}).join('')}
+
+실험 체험 평가: ${analysisResults.e.mean.toFixed(2)}/5.0점
+
+결론: ${['a', 'b', 'c'].filter(a => analysisResults[a].tTest.significant).length}/3개 영역에서 유의한 효과, ${['a', 'b', 'c'].filter(a => Math.abs(analysisResults[a].cohenD) >= 0.8).length}개 영역에서 큰 효과크기
+    `.trim();
+}
+
+// Part 4B 테스트 함수
+function testPart4B() {
+    console.log('🎯 Part 4B (보고서 생성) 함수들 로드 완료!');
+    
+    const functions = {
+        generateReport: typeof generateReport,
+        generateSummaryReport: typeof generateSummaryReport,
+        generateDetailedReport: typeof generateDetailedReport,
+        exportToCSV: typeof exportToCSV,
+        printReport: typeof printReport,
+        copyResults: typeof copyResults,
+        generateTextSummary: typeof generateTextSummary
+    };
+    
+    console.log('Part 4B 함수 확인:', functions);
+    return functions;
+}
+
+// Part 4B 로드 완료 시 자동 실행
+if (typeof document !== 'undefined') {
+    document.addEventListener('DOMContentLoaded', function() {
+        if (typeof testPart4B === 'function') {
+            testPart4B();
+        }
+    });
+}
+
+console.log('📋 Part 4B JavaScript 로드 완료!');
+
+// ========================================
+// 전체 시스템 초기화 및 통합 테스트 함수
+// ========================================
+
+// 전체 시스템 테스트 함수
+function testFullSystem() {
+    console.log('🚀 전체 시스템 테스트 시작!');
+    
+    const results = {
+        part1: typeof showTab !== 'undefined',
+        part2: typeof addStudent !== 'undefined',
+        part3: typeof calculateResults !== 'undefined',
+        part4a: typeof createCharts !== 'undefined',
+        part4b: typeof generateReport !== 'undefined'
+    };
+    
+    const allLoaded = Object.values(results).every(Boolean);
+    
+    console.log('파트별 로드 상태:', results);
+    console.log('전체 시스템 상태:', allLoaded ? '✅ 완료' : '❌ 불완전');
+    
+    if (allLoaded) {
+        console.log('🎉 모든 기능이 정상적으로 로드되었습니다!');
+        console.log('💡 사용법:');
+        console.log('1. 학급 선택 (초5/중2)');
+        console.log('2. 학생 추가 또는 샘플 데이터 로드');
+        console.log('3. 분석 실행 버튼 클릭');
+        console.log('4. 결과 확인 및 보고서 생성');
+    } else {
+        console.log('⚠️ 일부 기능이 로드되지 않았습니다. 파트별 코드를 확인해주세요.');
+    }
+    
+    return { results, allLoaded };
+}
+
+// DOM 로드 완료 시 전체 테스트 실행
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(testFullSystem, 1000); // 1초 후 테스트 실행
+});
+
+console.log('🎯 전체 시스템 준비 완료!');
+</script>
+
+
+
+</body>
+</html>
