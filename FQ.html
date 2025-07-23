@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>주파수 발생기</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+
+        .frequency-display {
+            text-align: center;
+            font-size: 36px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 10px;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .slider-container {
+            margin-bottom: 25px;
+        }
+
+        .slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #ddd;
+            outline: none;
+            -webkit-appearance: none;
+            margin: 10px 0;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .slider::-webkit-slider-thumb:hover {
+            background: #5a6fd8;
+            transform: scale(1.1);
+        }
+
+        .slider::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            border: none;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .play-btn {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .play-btn:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+
+        .stop-btn {
+            background: #f44336;
+            color: white;
+        }
+
+        .stop-btn:hover {
+            background: #da190b;
+            transform: translateY(-2px);
+        }
+
+        .volume-control {
+            margin-top: 20px;
+        }
+
+        .preset-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .preset-btn {
+            padding: 10px;
+            background: rgba(102, 126, 234, 0.1);
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            color: #667eea;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .preset-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .status {
+            text-align: center;
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .status.playing {
+            background: rgba(76, 175, 80, 0.1);
+            color: #4CAF50;
+        }
+
+        .status.stopped {
+            background: rgba(244, 67, 54, 0.1);
+            color: #f44336;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+            
+            .frequency-display {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎵 주파수 발생기</h1>
+        
+        <div class="frequency-display" id="frequencyDisplay">440 Hz</div>
+        
+        <div class="input-group">
+            <label for="frequencyInput">주파수 입력 (Hz):</label>
+            <input type="number" id="frequencyInput" min="20" max="20000" value="440" step="1">
+        </div>
+        
+        <div class="slider-container">
+            <label>주파수 조절:</label>
+            <input type="range" id="frequencySlider" class="slider" min="20" max="20000" value="440" step="1">
+        </div>
+        
+        <div class="controls">
+            <button class="play-btn" onclick="startTone()">▶ 재생</button>
+            <button class="stop-btn" onclick="stopTone()">⏹ 정지</button>
+        </div>
+        
+        <div class="input-group">
+            <label>배음 설정:</label>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 10px;">
+                <label style="display: flex; align-items: center; font-size: 14px;">
+                    <input type="checkbox" id="harmonic2" checked style="margin-right: 8px;">
+                    2배음 (옥타브)
+                </label>
+                <label style="display: flex; align-items: center; font-size: 14px;">
+                    <input type="checkbox" id="harmonic3" checked style="margin-right: 8px;">
+                    3배음 (완전5도)
+                </label>
+                <label style="display: flex; align-items: center; font-size: 14px;">
+                    <input type="checkbox" id="harmonic4" style="margin-right: 8px;">
+                    4배음
+                </label>
+                <label style="display: flex; align-items: center; font-size: 14px;">
+                    <input type="checkbox" id="harmonic5" style="margin-right: 8px;">
+                    5배음
+                </label>
+            </div>
+        </div>
+        <div class="volume-control">
+            <label>음량 조절 (MAX 출력):</label>
+            <input type="range" id="volumeSlider" class="slider" min="0" max="100" value="100" step="1">
+            <div style="font-size: 12px; color: #d32f2f; margin-top: 5px; font-weight: bold;">
+                🔊 최대 출력 + 배음 증폭 모드
+            </div>
+        </div>
+                
+        
+        <div class="preset-buttons">
+            <button class="preset-btn" onclick="setFrequency(440)">A4 (440Hz)</button>
+            <button class="preset-btn" onclick="setFrequency(523.25)">C5 (523Hz)</button>
+            <button class="preset-btn" onclick="setFrequency(587.33)">D5 (587Hz)</button>
+            <button class="preset-btn" onclick="setFrequency(659.25)">E5 (659Hz)</button>
+            <button class="preset-btn" onclick="setFrequency(698.46)">F5 (698Hz)</button>
+            <button class="preset-btn" onclick="setFrequency(783.99)">G5 (784Hz)</button>
+            <button class="preset-btn" onclick="setFrequency(880)">A5 (880Hz)</button>
+            <button class="preset-btn" onclick="setFrequency(261.63)">C4 (262Hz)</button>
+            <button class="preset-btn" onclick="setFrequency(1000)">1kHz 테스트</button>
+        </div>
+        
+        <div class="status stopped" id="status">정지됨</div>
+        
+        <div style="margin-top: 15px; padding: 15px; background: rgba(255, 193, 7, 0.1); border-radius: 8px; font-size: 14px; color: #856404;">
+            <strong>💡 소리굽쇠 사용 팁 (3W 스피커용):</strong><br>
+            • 스피커를 소리굽쇠에 직접 접촉시켜보세요<br>
+            • 스피커를 단단한 표면(책상 등)에 놓고 소리굽쇠도 같은 표면에<br>
+            • 핸드폰 음량도 최대로 설정하세요<br>
+            • 소리굽쇠 끝부분을 스피커 진동판에 가까이 대세요<br>
+            • 더 강력한 출력을 위해 컴프레서 증폭 적용됨
+        </div>
+        
+        <div style="margin-top: 10px; padding: 10px; background: rgba(244, 67, 54, 0.1); border-radius: 8px; font-size: 12px; color: #d32f2f;">
+            <strong>⚠️ 주의:</strong> 3W 스피커는 출력이 제한적입니다. 더 강력한 효과를 원하시면:<br>
+            • 더 큰 출력의 스피커 사용 (10W 이상 권장)<br>
+            • 유선 연결로 블루투스 지연 최소화<br>
+            • 우퍼가 있는 스피커 사용
+        </div>
+    </div>
+
+    <script>
+        let audioContext;
+        let oscillators = [];
+        let gainNodes = [];
+        let isPlaying = false;
+        
+        const frequencyInput = document.getElementById('frequencyInput');
+        const frequencySlider = document.getElementById('frequencySlider');
+        const volumeSlider = document.getElementById('volumeSlider');
+        const frequencyDisplay = document.getElementById('frequencyDisplay');
+        const statusDiv = document.getElementById('status');
+        
+        // 주파수 입력과 슬라이더 동기화
+        frequencyInput.addEventListener('input', function() {
+            const freq = parseFloat(this.value);
+            if (freq >= 20 && freq <= 20000) {
+                frequencySlider.value = freq;
+                updateFrequencyDisplay(freq);
+                if (isPlaying) {
+                    updateOscillatorFrequencies(freq);
+                }
+            }
+        });
+        
+        frequencySlider.addEventListener('input', function() {
+            const freq = parseFloat(this.value);
+            frequencyInput.value = freq;
+            updateFrequencyDisplay(freq);
+            if (isPlaying) {
+                updateOscillatorFrequencies(freq);
+            }
+        });
+        
+        volumeSlider.addEventListener('input', function() {
+            const volume = parseFloat(this.value) / 100;
+            if (gainNodes.length > 0) {
+                gainNodes.forEach(gain => {
+                    gain.gain.value = volume;
+                });
+            }
+        });
+        
+        function updateOscillatorFrequencies(baseFreq) {
+            oscillators.forEach((osc, index) => {
+                const harmonic = index + 1;
+                osc.frequency.value = baseFreq * harmonic;
+            });
+        }
+        
+        function updateFrequencyDisplay(freq) {
+            let displayText = freq + ' Hz';
+            const harmonics = [];
+            if (document.getElementById('harmonic2').checked) harmonics.push('2x');
+            if (document.getElementById('harmonic3').checked) harmonics.push('3x');
+            if (document.getElementById('harmonic4').checked) harmonics.push('4x');
+            if (document.getElementById('harmonic5').checked) harmonics.push('5x');
+            
+            if (harmonics.length > 0) {
+                displayText += ' + ' + harmonics.join(', ');
+            }
+            
+            frequencyDisplay.textContent = displayText;
+        }
+        
+        function setFrequency(freq) {
+            frequencyInput.value = freq;
+            frequencySlider.value = freq;
+            updateFrequencyDisplay(freq);
+            if (isPlaying) {
+                updateOscillatorFrequencies(freq);
+            }
+        }
+        
+        function startTone() {
+            if (isPlaying) return;
+            
+            try {
+                // Web Audio API 컨텍스트 생성
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                
+                // 배음 설정 확인
+                const harmonics = [];
+                if (document.getElementById('harmonic2').checked) harmonics.push(2);
+                if (document.getElementById('harmonic3').checked) harmonics.push(3);
+                if (document.getElementById('harmonic4').checked) harmonics.push(4);
+                if (document.getElementById('harmonic5').checked) harmonics.push(5);
+                
+                // 기본 주파수 추가
+                harmonics.unshift(1);
+                
+                const baseFreq = parseFloat(frequencyInput.value);
+                const baseVolume = parseFloat(volumeSlider.value) / 100;
+                
+                // 컴프레서 생성
+                const compressor = audioContext.createDynamicsCompressor();
+                compressor.threshold.value = -24;
+                compressor.knee.value = 30;
+                compressor.ratio.value = 12;
+                compressor.attack.value = 0.003;
+                compressor.release.value = 0.25;
+                
+                // 각 배음별 오실레이터 생성
+                harmonics.forEach((harmonic, index) => {
+                    const osc = audioContext.createOscillator();
+                    const gain = audioContext.createGain();
+                    
+                    osc.type = 'sine';
+                    osc.frequency.value = baseFreq * harmonic;
+                    
+                    // 배음별 음량 조절 (기본음이 가장 크고, 배음은 점진적으로 감소)
+                    const harmonicVolume = baseVolume / (harmonic * 0.7);
+                    gain.gain.value = Math.min(harmonicVolume, 1.0);
+                    
+                    // 노드 연결
+                    osc.connect(gain);
+                    gain.connect(compressor);
+                    
+                    oscillators.push(osc);
+                    gainNodes.push(gain);
+                });
+                
+                // 최종 출력 연결
+                compressor.connect(audioContext.destination);
+                
+                // 모든 오실레이터 시작
+                oscillators.forEach(osc => osc.start());
+                
+                isPlaying = true;
+                
+                // 상태 업데이트
+                statusDiv.textContent = '재생 중... (배음 ' + (harmonics.length - 1) + '개 추가)';
+                statusDiv.className = 'status playing';
+                
+            } catch (error) {
+                console.error('오디오 재생 오류:', error);
+                alert('오디오 재생에 문제가 발생했습니다. 브라우저 설정을 확인해주세요.');
+            }
+        }
+        
+        function stopTone() {
+            if (!isPlaying) return;
+            
+            try {
+                // 모든 오실레이터 정지
+                oscillators.forEach(osc => {
+                    osc.stop();
+                    osc.disconnect();
+                });
+                
+                // 모든 게인 노드 정리
+                gainNodes.forEach(gain => {
+                    gain.disconnect();
+                });
+                
+                // 배열 초기화
+                oscillators = [];
+                gainNodes = [];
+                
+                audioContext.close();
+                
+                isPlaying = false;
+                
+                // 상태 업데이트
+                statusDiv.textContent = '정지됨';
+                statusDiv.className = 'status stopped';
+                
+            } catch (error) {
+                console.error('오디오 정지 오류:', error);
+            }
+        }
+        
+        // 페이지 언로드 시 정리
+        window.addEventListener('beforeunload', function() {
+            if (isPlaying) {
+                stopTone();
+            }
+        });
+        
+        // 초기 주파수 표시
+        updateFrequencyDisplay(440);
+    </script>
+</body>
+</html>
